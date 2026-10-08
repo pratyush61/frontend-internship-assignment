@@ -9,12 +9,12 @@ export default function App() {
   const [saved] = useState(loadSession);
   const [notes, setNotes] = useState(saved?.notes ?? '');
   const [count, setCount] = useState(saved?.count ?? 8);
-  const { status, studySet, version, dropped, error, generate, retry } = useStudySet(saved);
+  const { status, studySet, version, dropped, error, generate, retry, cancel } = useStudySet(saved);
 
   const isLoading = status === 'loading';
   let results;
   if (isLoading) {
-    results = <LoadingState />;
+    results = <LoadingState onCancel={cancel} />;
   } else if (studySet) {
     results = (
       <>

@@ -17,6 +17,8 @@ function reducer(state, action) {
       return { ...state, status: 'loading', error: null };
     case 'success':
       return { status: 'success', studySet: action.studySet, version: state.version + 1, dropped: action.dropped, error: null };
+    case 'cancel':
+      return { ...state, status: state.studySet ? 'success' : 'idle', error: null };
     case 'failure':
       return { ...state, status: 'error', error: action.error };
     default:
@@ -59,5 +61,5 @@ export function useStudySet(savedSession) {
 
   useEffect(() => () => latest.current.controller?.abort(), []);
 
-  return { ...state, generate, retry };
+  return { ...state, generate, retry, cancel };
 }

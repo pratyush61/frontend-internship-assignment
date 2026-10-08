@@ -11,7 +11,7 @@ export function EmptyState() {
 
 const SLOW_AFTER_MS = 8000;
 
-export function LoadingState() {
+export function LoadingState({ onCancel }) {
   const [slow, setSlow] = useState(false);
   useEffect(() => {
     const timer = setTimeout(() => setSlow(true), SLOW_AFTER_MS);
@@ -24,6 +24,9 @@ export function LoadingState() {
       <div className="skeleton skeleton-card" />
       <div className="skeleton skeleton-line" />
       <p>{slow ? 'Still working. Longer notes take more time.' : 'Writing your cards and questions…'}</p>
+      {onCancel && (
+        <button type="button" className="secondary" onClick={onCancel}>Cancel</button>
+      )}
     </div>
   );
 }
