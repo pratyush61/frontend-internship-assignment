@@ -21,3 +21,11 @@ export function loadSession() {
     return null;
   }
 }
+
+export function clearSession() {
+  try {
+    localStorage.removeItem(KEY);
+  } catch {
+    /* ignore */
+  }
+}
