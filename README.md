@@ -79,7 +79,7 @@ _Edit this so it is true for you._ I used Claude to help plan the architecture a
 - Answer positions in the quiz are as the model returns them; there is no client-side option shuffling.
 - No streaming and no follow-up refinement of an existing set.
 - Only one saved session; no history.
-- No rate limiting on `/api/generate`, so a public deployment could be abused until you add limits or a quota alert on the key.
+- Rate limiting on `/api/generate` is a best-effort in-memory limit (10 requests/minute per IP per serverless instance), not a hard quota. Set a spend cap or alert on the API key too.
 - Very long notes are rejected (8,000 characters) rather than chunked.
 - Quality depends on the model; factual errors in generated cards are possible, so check anything important against your source.
 - Tested with unit tests and a production build. Browser-level and real-device testing is listed under "Time spent" below.
@@ -90,4 +90,4 @@ _Fill in honestly, e.g. "~X hours: planning X, implementation X, testing X, READ
 
 ## What I'd do next
 
-Option shuffling, streaming partial results, a "make these harder" refinement prompt, per-item regenerate, IP-based rate limiting, and end-to-end tests with Playwright.
+Option shuffling, streaming partial results, a "make these harder" refinement prompt, per-item regenerate, a shared rate-limit store, and end-to-end tests with Playwright.
