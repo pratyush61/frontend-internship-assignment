@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { shuffleArray } from '../lib/shuffle.js';
 
 export default function FlashcardDeck({ cards }) {
   const [queue, setQueue] = useState(cards);
@@ -57,9 +58,14 @@ export default function FlashcardDeck({ cards }) {
 
   return (
     <div className="deck" onKeyDown={onKeyDown}>
-      <p className="progress" aria-live="polite">
-        Card {index + 1} of {queue.length}
-      </p>
+      <div className="deck-head">
+        <p className="progress" aria-live="polite">
+          Card {index + 1} of {queue.length}
+        </p>
+        <button type="button" className="link-button" onClick={() => restart(shuffleArray(queue))}>
+          Shuffle deck
+        </button>
+      </div>
 
       <button type="button" className={`flashcard ${flipped ? 'flipped' : ''}`} onClick={() => setFlipped((f) => !f)}>
         <span className="face front" aria-hidden={flipped}>{card.front}</span>
