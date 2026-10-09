@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { AppError } from '../lib/errors.js';
-import { saveSession } from '../lib/storage.js';
+import { clearSession, saveSession } from '../lib/storage.js';
 import { generateStudySet } from '../lib/studyService.js';
 
 const initialState = (saved) => ({
@@ -19,6 +19,8 @@ function reducer(state, action) {
       return { status: 'success', studySet: action.studySet, version: state.version + 1, dropped: action.dropped, error: null };
     case 'cancel':
       return { ...state, status: state.studySet ? 'success' : 'idle', error: null };
+    case 'reset':
+      return { ...initialState(null), version: state.version + 1 };
     case 'failure':
       return { ...state, status: 'error', error: action.error };
     default:
@@ -59,7 +61,13 @@ export function useStudySet(savedSession) {
     if (latest.current.lastInput) generate(latest.current.lastInput);
   }, [generate]);
 
+  const reset = useCallback(() => {
+    latest.current.controller?.abort();
+    clearSession();
+    dispatch({ type: 'reset' });
+  }, []);
+
   useEffect(() => () => latest.current.controller?.abort(), []);
 
-  return { ...state, generate, retry, cancel };
+  return { ...state, generate, retry, cancel, reset };
 }

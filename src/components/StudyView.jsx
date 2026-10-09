@@ -13,7 +13,7 @@ function downloadMarkdown(studySet) {
   URL.revokeObjectURL(url);
 }
 
-export default function StudyView({ studySet, dropped }) {
+export default function StudyView({ studySet, dropped, onClear }) {
   const { title, flashcards, quiz } = studySet;
   const [tab, setTab] = useState(flashcards.length > 0 ? 'cards' : 'quiz');
   const baseId = useId();
@@ -38,6 +38,9 @@ export default function StudyView({ studySet, dropped }) {
         <div className="study-actions">
           <button type="button" className="link-button" onClick={() => downloadMarkdown(studySet)}>
             Download as Markdown
+          </button>
+          <button type="button" className="link-button" onClick={onClear}>
+            Clear set
           </button>
         </div>
       </div>

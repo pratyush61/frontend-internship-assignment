@@ -10,7 +10,7 @@ export default function App() {
   const [draft] = useState(loadDraft);
   const [notes, setNotes] = useState(draft?.notes ?? saved?.notes ?? '');
   const [count, setCount] = useState(draft?.count ?? saved?.count ?? 8);
-  const { status, studySet, version, dropped, error, generate, retry, cancel } = useStudySet(saved);
+  const { status, studySet, version, dropped, error, generate, retry, cancel, reset } = useStudySet(saved);
 
   useEffect(() => saveDraft({ notes, count }), [notes, count]);
 
@@ -22,7 +22,7 @@ export default function App() {
     results = (
       <>
         {status === 'error' && <ErrorState error={error} onRetry={retry} compact />}
-        <StudyView key={version} studySet={studySet} dropped={dropped} />
+        <StudyView key={version} studySet={studySet} dropped={dropped} onClear={reset} />
       </>
     );
   } else if (status === 'error') {
