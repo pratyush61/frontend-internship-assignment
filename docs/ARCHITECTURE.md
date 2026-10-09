@@ -4,11 +4,11 @@
 
 1. `InputPanel` collects notes and an item count. The draft is saved to `localStorage` as the user types.
 2. `App` calls `generate()` from `useStudySet`.
-3. `useStudySet` asks `createLatestRequest` for a handle (this aborts any earlier request), then calls `generateStudySet`.
+3. `useStudySet` tracks the latest request and aborts any earlier request before calling `generateStudySet`.
 4. `generateStudySet` (`studyService.js`) calls `requestModelText` (`api.js`) which POSTs to `/api/generate`.
 5. `server/generate.js` validates input, calls Gemini with a timeout, and returns the model's raw text.
-6. Back on the client, `parseStudySet` extracts JSON, validates every item, and drops invalid ones. Unusable output triggers one retry. Quiz options are then shuffled.
-7. The hook dispatches `success` only if the request handle is still current. Otherwise the result is discarded.
+6. Back on the client, `parseStudySet` extracts JSON, validates every item, and drops invalid ones. Unusable output triggers one retry. The validated study set is then rendered, and the flashcard deck can be shuffled by the user.
+7. The hook dispatches `success` only if the request is still current. Otherwise the result is discarded.
 8. `StudyView` renders `FlashcardDeck` and `Quiz` from the validated data only.
 
 ## Why it is built this way
