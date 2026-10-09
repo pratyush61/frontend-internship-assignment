@@ -11,7 +11,7 @@ It is not a chatbot: the model never returns text that is shown directly. Everyt
 
 ## Quick start
 
-Requires Node 18+ and a free [Gemini API key](https://aistudio.google.com/apikey).
+Requires Node 18+ (an `.nvmrc` pins 20; run `nvm use` if you use nvm) and a free [Gemini API key](https://aistudio.google.com/apikey).
 
 ```bash
 cp .env.example .env     # then paste your key into GEMINI_API_KEY
