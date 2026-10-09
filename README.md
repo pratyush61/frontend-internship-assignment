@@ -66,6 +66,8 @@ InputPanel ──► useStudySet ──► studyService ──► api.js ──�
 
 Prompt injection: the user's notes are wrapped in `<notes>` tags and the system prompt tells the model to treat them as data only. This reduces the risk; it is not a guarantee.
 
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the request flow and the reasoning behind the main decisions.
+
 ## UI notes
 
 Two-column layout on desktop, stacked on mobile. Loading (skeleton), empty, and error states. Keyboard: Space/Enter flips a card, ← → move between cards, arrow keys switch tabs, focus moves to each new quiz question, Cmd/Ctrl+Enter submits. Colour is never the only signal (answers are labelled "Correct answer" / "Your answer"). Follows the system light/dark setting and `prefers-reduced-motion`. The last study set is saved in `localStorage` and restored on reload.
