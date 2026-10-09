@@ -1,6 +1,17 @@
 import { useId, useState } from 'react';
 import FlashcardDeck from './FlashcardDeck.jsx';
 import Quiz from './Quiz.jsx';
+import { fileNameFor, studySetToMarkdown } from '../lib/exportMarkdown.js';
+
+function downloadMarkdown(studySet) {
+  const blob = new Blob([studySetToMarkdown(studySet)], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileNameFor(studySet.title);
+  link.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function StudyView({ studySet, dropped }) {
   const { title, flashcards, quiz } = studySet;
@@ -22,7 +33,14 @@ export default function StudyView({ studySet, dropped }) {
 
   return (
     <section className="panel study" aria-label="Study set">
-      <h2 className="study-title">{title}</h2>
+      <div className="study-head">
+        <h2 className="study-title">{title}</h2>
+        <div className="study-actions">
+          <button type="button" className="link-button" onClick={() => downloadMarkdown(studySet)}>
+            Download as Markdown
+          </button>
+        </div>
+      </div>
       {dropped > 0 && (
         <p className="notice">
           {dropped} {dropped === 1 ? 'item' : 'items'} from the model {dropped === 1 ? 'was' : 'were'} malformed and skipped.

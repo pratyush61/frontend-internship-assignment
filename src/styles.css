@@ -133,6 +133,9 @@ textarea[aria-invalid='true'] { border-color: var(--bad); }
 
 /* Study view */
 .study-title { font-family: var(--font-card); font-size: 1.5rem; line-height: 1.25; margin-bottom: 12px; }
+.study-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 16px; margin-bottom: 12px; }
+.study-head .study-title { margin-bottom: 0; }
+.study-actions { display: flex; gap: 16px; }
 .notice { background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; font-size: 0.875rem; margin-bottom: 12px; }
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
 .tabs [role='tab'] {
