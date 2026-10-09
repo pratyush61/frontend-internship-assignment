@@ -61,6 +61,11 @@ export function useStudySet(savedSession) {
     if (latest.current.lastInput) generate(latest.current.lastInput);
   }, [generate]);
 
+  const cancel = useCallback(() => {
+    latest.current.controller?.abort(); // generate() swallows the resulting AbortError
+    dispatch({ type: 'cancel' });
+  }, []);
+
   const reset = useCallback(() => {
     latest.current.controller?.abort();
     clearSession();
