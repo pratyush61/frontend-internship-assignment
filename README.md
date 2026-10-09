@@ -1,95 +1,121 @@
-# Recall
+# Recall — AI-Powered Study Set Generator
 
-Paste lecture notes or type a topic. Recall asks an LLM for **structured JSON**, validates it, and turns it into two study tools:
+Recall turns a topic or a set of notes into a structured study set using the Gemini API. Instead of returning a chatbot-style conversation, it generates study material that can be reviewed as flashcards and practised with a quiz.
 
-- **Flashcards**: flip, move through the deck, mark "Got it" or "Still learning", then review only the cards you were still learning.
-- **Quiz**: multiple choice with instant feedback and explanations, a score, and **re-testing of only the questions you got wrong**, repeated until you clear them.
+## Project Links
 
-It is not a chatbot: the model never returns text that is shown directly. Everything on screen is rendered from validated data.
+- **Live demo:** https://frontend-internship-assignment-chi.vercel.app/
+- **GitHub repository:** https://github.com/pratyush61/frontend-internship-assignment
+- **Screen recording:** https://drive.google.com/file/d/1dcKVwqh_c3CGSxGfU5rnZiYL00Ud34Dp/view?usp=sharing
 
-> Live demo: _add your deployed URL here_  ·  Screen recording: _add link here_
+## Features
 
-## Quick start
+- Generate a structured study set from a topic or pasted notes.
+- Review generated material using interactive flashcards.
+- Practise with a quiz and revisit incorrect answers.
+- Validate model output before rendering it.
+- Show loading, empty, and error states during generation.
+- Handle malformed or unexpected model output, empty responses, API failures, and slow requests.
+- Cancel an in-progress generation request.
+- Prevent stale responses from overwriting newer state.
+- Retry generation after an error.
+- Shuffle the study set.
+- Preserve a draft locally between visits.
+- Export study material as Markdown.
+- Clear the current study set.
+- Use keyboard shortcuts for quiz interactions.
+- Provide an error boundary as a fallback for unexpected rendering errors.
+- Apply best-effort request rate limiting.
+- Responsive interface for desktop and smaller screens.
 
-Requires Node 18+ (an `.nvmrc` pins 20; run `nvm use` if you use nvm) and a free [Gemini API key](https://aistudio.google.com/apikey).
+## Tech Stack
+
+- **React** — user interface
+- **JavaScript** — application logic
+- **Gemini API** — runtime study-content generation
+- **Vercel** — deployment
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js and npm
+- A Gemini API key
+
+### 1. Clone the repository
 
 ```bash
-cp .env.example .env     # then paste your key into GEMINI_API_KEY
-npm install && npm start # http://localhost:5173
+git clone https://github.com/pratyush61/frontend-internship-assignment.git
+cd frontend-internship-assignment
 ```
 
-| Command | What it does |
-| --- | --- |
-| `npm start` | Dev server. Also serves `POST /api/generate` locally. |
-| `npm test` | Unit tests (Node's built-in test runner, no extra dependencies). |
-| `npm run build` | Production build into `dist/`. |
+### 2. Install dependencies
 
-### Environment variables
-
-| Name | Required | Notes |
-| --- | --- | --- |
-| `GEMINI_API_KEY` | yes | Server-side only. Never sent to or bundled into the browser. |
-| `GEMINI_MODEL` | no | Defaults to `gemini-3.1-flash-lite`. Any Gemini model that supports `generateContent` works. |
-
-### Deploy (Vercel)
-
-Import the repo, add `GEMINI_API_KEY` under Project Settings → Environment Variables, deploy. Vercel detects Vite for the frontend and runs `api/generate.js` as the serverless function.
-
-## How it works
-
-```
-InputPanel ──► useStudySet ──► studyService ──► api.js ──► POST /api/generate ──► Gemini
-                    ▲               │ parseStudySet (validate + clean)
-                    └───────────────┘
-        status: idle | loading | success | error  ──►  StudyView ► FlashcardDeck / Quiz
+```bash
+npm install
 ```
 
-- **API key stays on the server.** The browser only talks to `/api/generate` (`server/generate.js`). The same handler runs under Vite in dev and as a Vercel function in production (thin adapters in `vite.config.js` and `api/generate.js`). The server validates input size and count, applies a timeout, maps upstream failures to safe error kinds, and returns the model's raw text.
-- **The client owns trust.** `src/lib/parseStudySet.js` is the single place model output becomes app data (details below).
-- **State.** `useStudySet` is a small reducer-based hook for the request lifecycle. The quiz is a pure reducer (`src/lib/quizReducer.js`) so its rules are unit-tested without React. Flashcard progress is local component state.
-- **No SDK.** The Gemini call is one `fetch` in `server/generate.js`, requesting `responseMimeType: application/json`. The JSON shape is specified in the prompt (`server/prompt.js`) and **enforced by our own validator**, not by the provider.
+### 3. Configure the Gemini API key
 
-## Handling bad AI output
+Configure the Gemini API key using the environment-variable name expected by the server-side API handler in this repository. For local development, put the key in your local environment configuration.
 
-| Failure | Behaviour |
-| --- | --- |
-| Malformed or truncated JSON | `extractJson` strips code fences and surrounding chatter; if still invalid, one automatic retry, then an error with a Try again button. |
-| Wrong shape (array, string, `null`) | Rejected as `invalid_output`, same retry path. |
-| Valid JSON, nothing usable | Rejected as `empty`, same retry path. |
-| Some items invalid (missing text, `answerIndex` out of range, duplicate options, <2 options) | Only those items are dropped; the rest are used and the UI says how many were skipped. |
-| Only flashcards or only quiz returned | The missing tab is disabled; the other works. |
-| Slow response | 30s timeout on the server, 40s on the client, then a timeout error. After 8s the loading state says it is still working. |
-| Network down / rate limit (429) / provider error / blocked prompt | Distinct, plain-language messages. Retry is offered where it can help (not for config or rejected-input errors). These are not auto-retried. |
-| **Stale responses** | Starting a new request aborts the previous fetch, and a request-id check discards any result that still arrives late, so an old response can never overwrite a newer one. |
-| Failed regenerate when a set already exists | The error appears above the previous set instead of replacing it. |
-| Corrupt saved session | `localStorage` data is re-validated on load; invalid data is ignored. |
+**Security:** Never commit API keys or other secrets to GitHub. If you use a `.env` file, ensure it is listed in `.gitignore`. Keep the key on the server side; do not expose a private key in client-side code.
 
-Prompt injection: the user's notes are wrapped in `<notes>` tags and the system prompt tells the model to treat them as data only. This reduces the risk; it is not a guarantee.
+### 4. Start the application
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the request flow and the reasoning behind the main decisions.
+```bash
+npm start
+```
 
-## UI notes
+Open the local URL shown in your terminal. Confirm that `npm start` is the correct script in `package.json` for your final version before submitting.
 
-Two-column layout on desktop, stacked on mobile. Loading (skeleton), empty, and error states. Keyboard: Space/Enter flips a card, ← → move between cards, arrow keys switch tabs, focus moves to each new quiz question, Cmd/Ctrl+Enter submits. Colour is never the only signal (answers are labelled "Correct answer" / "Your answer"). Follows the system light/dark setting and `prefers-reduced-motion`. The last study set is saved in `localStorage` and restored on reload.
+## How It Works
 
-## AI usage note
+1. The user enters a topic or study notes.
+2. The application sends the request to its server-side API handler.
+3. The handler calls Gemini to generate structured study content.
+4. The response is parsed and validated before being used by the interface.
+5. The generated content is displayed as flashcards and quiz questions.
+6. The user can review, practise, retry, shuffle, export, or clear the study set.
 
-_Edit this so it is true for you._ I used Claude to help plan the architecture and to generate a first draft of much of the code, tests, and this README. I then ran, read, and changed it, and I can explain each file. The study content itself is generated at runtime by Gemini.
+Recall is designed around structured study content rather than an open-ended chatbot conversation. The application validates model output instead of assuming every API response is usable.
 
-## Known limitations
+## Error Handling and Reliability
 
-- Answer positions in the quiz are as the model returns them; there is no client-side option shuffling.
-- No streaming and no follow-up refinement of an existing set.
-- Only one saved session; no history.
-- Rate limiting on `/api/generate` is a best-effort in-memory limit (10 requests/minute per IP per serverless instance), not a hard quota. Set a spend cap or alert on the API key too.
-- Very long notes are rejected (8,000 characters) rather than chunked.
-- Quality depends on the model; factual errors in generated cards are possible, so check anything important against your source.
-- Tested with unit tests and a production build. Browser-level and real-device testing is listed under "Time spent" below.
+The application is designed to handle common failure cases, including malformed or unexpected model output, empty responses, API failures, slow requests, cancellation, and outdated responses. Loading and error states communicate the current status, while response validation helps prevent invalid data from being rendered as study material.
 
-## Time spent
+The study-generation hook supports cancelling an in-progress request. An error boundary provides a fallback for rendering errors that escape normal component-level handling.
 
-_Fill in honestly, e.g. "~X hours: planning X, implementation X, testing X, README X."_
+## Known Limitations
 
-## What I'd do next
+- AI-generated study content can be incorrect, incomplete, or misleading. Verify important information against trusted sources.
+- Streaming generation is not implemented.
+- Follow-up refinement of an existing study set is not implemented.
+- Session history is limited; this is not a full multi-session study-management system.
+- Rate limiting is best-effort and in-memory. In serverless deployments, limits may not be shared across instances and should not be treated as production-grade abuse prevention.
+- Very long notes may be rejected by the application's input-length limit.
+- Availability and output quality depend on the Gemini API, network conditions, and API configuration.
+- Browser and real-device behaviour can vary.
 
-Option shuffling, streaming partial results, a "make these harder" refinement prompt, per-item regenerate, a shared rate-limit store, and end-to-end tests with Playwright.
+## Testing
+
+Run the following commands from the project directory:
+
+```bash
+npm test
+npm run build
+```
+
+These commands run the test script and production build script defined by the project. Run them against the exact final commit before submission and only report results that you have verified.
+
+## AI Usage Note
+
+I used **Claude and ChatGPT** as development assistants during this project for debugging, code suggestions, UI improvements, and documentation.
+
+During debugging, AI assistance helped me investigate a runtime crash caused by a missing `cancel` handler in the study-generation hook. I also used AI feedback while refining the interface and preparing the project documentation.
+
+I reviewed and applied suggested changes and remain responsible for the final implementation. The study content is generated at runtime using the **Gemini API**.
+
+## Time Spent
+
+Approximately **6–7 hours** across implementation, debugging, UI refinement, testing, and documentation.
