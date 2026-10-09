@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import InputPanel from './components/InputPanel.jsx';
 import StudyView from './components/StudyView.jsx';
 import { EmptyState, ErrorState, LoadingState } from './components/StatusViews.jsx';
 import { useStudySet } from './hooks/useStudySet.js';
-import { loadSession } from './lib/storage.js';
+import { loadDraft, loadSession, saveDraft } from './lib/storage.js';
 
 export default function App() {
   const [saved] = useState(loadSession);
-  const [notes, setNotes] = useState(saved?.notes ?? '');
-  const [count, setCount] = useState(saved?.count ?? 8);
+  const [draft] = useState(loadDraft);
+  const [notes, setNotes] = useState(draft?.notes ?? saved?.notes ?? '');
+  const [count, setCount] = useState(draft?.count ?? saved?.count ?? 8);
   const { status, studySet, version, dropped, error, generate, retry, cancel } = useStudySet(saved);
+
+  useEffect(() => saveDraft({ notes, count }), [notes, count]);
 
   const isLoading = status === 'loading';
   let results;
