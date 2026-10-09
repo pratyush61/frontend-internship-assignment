@@ -64,6 +64,19 @@ export default function Quiz({ questions }) {
     headingRef.current?.focus();
   }, [position]);
 
+  const selectable = state.phase === 'question' && state.selected === null;
+  const optionCount = state.queue[state.index]?.options.length ?? 0;
+  useEffect(() => {
+    if (!selectable) return undefined;
+    const onKey = (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const n = Number(e.key);
+      if (Number.isInteger(n) && n >= 1 && n <= optionCount) dispatch({ type: 'select', optionIndex: n - 1 });
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selectable, optionCount, state.index]);
+
   if (state.phase === 'finished') {
     return (
       <div ref={headingRef} tabIndex={-1} className="quiz">
@@ -101,6 +114,7 @@ export default function Quiz({ questions }) {
         ))}
       </div>
 
+      {!answered && <p className="hint-keys">Tip: press 1–{question.options.length} to answer.</p>}
       <div aria-live="polite">
         {answered && (
           <div className={`feedback ${wasCorrect ? 'good' : 'bad'}`}>

@@ -184,6 +184,8 @@ textarea[aria-invalid='true'] { border-color: var(--bad); }
 .feedback.bad { background: var(--bad-bg); }
 .quiz > [tabindex='-1']:focus { outline: none; }
 
+.hint-keys { margin-top: 10px; font-size: 0.8125rem; color: var(--muted); }
+
 /* Results */
 .score { font-size: 1.125rem; font-weight: 600; margin-bottom: 12px; }
 .history { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0 0 16px; list-style: none; }
