@@ -3,8 +3,16 @@ import { useEffect, useState } from 'react';
 export function EmptyState() {
   return (
     <div className="panel status empty">
-      <h2>Nothing to study yet</h2>
-      <p>Paste your notes or type a topic, then generate. You’ll get flashcards to flip through and a quiz that re-tests what you missed.</p>
+      <div className="empty-heading">
+        <div><span className="section-label">THE RECALL WORKFLOW</span><h2>Your next study session, <em>upgraded.</em></h2><p>One source of truth. Three steps toward knowledge that lasts.</p></div>
+        <div className="empty-score" aria-hidden="true"><span>01</span><small>START HERE</small></div>
+      </div>
+      <div className="empty-feature-grid">
+        <div className="empty-feature feature-cyan"><span className="feature-index">01 / ABSORB</span><div className="feature-symbol" aria-hidden="true">↗</div><h3>Build your set</h3><p>Turn notes, chapters, or a topic into a focused study set.</p></div>
+        <div className="empty-feature feature-violet"><span className="feature-index">02 / RETRIEVE</span><div className="feature-symbol" aria-hidden="true">⌘</div><h3>Test your recall</h3><p>Use flashcards and quizzes to strengthen active memory.</p></div>
+        <div className="empty-feature feature-coral"><span className="feature-index">03 / IMPROVE</span><div className="feature-symbol" aria-hidden="true">↻</div><h3>Close the gaps</h3><p>Return to missed concepts and see what you truly know.</p></div>
+      </div>
+      <div className="empty-footer"><span className="footer-pulse" /><div><strong>Your workspace is ready</strong><p>Add material on the left to generate your first study set.</p></div><span className="footer-arrow" aria-hidden="true">↗</span></div>
     </div>
   );
 }
